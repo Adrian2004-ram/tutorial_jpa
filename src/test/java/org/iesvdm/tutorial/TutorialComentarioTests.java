@@ -44,6 +44,7 @@ public class TutorialComentarioTests {
     void pruebaFetchLazyEager() {
 
         transactionTemplate.execute(status ->  {
+
             Tutorial tutorial = tutorialRepository.save(Tutorial.builder()
                     .titulo("Título 1")
                     .build());
@@ -104,7 +105,7 @@ public class TutorialComentarioTests {
     @Order(3)
     public void actualizarHijoDePadre() {
 
-        Tutorial tutorial = tutorialRepository.findById(1L).orElse(null);
+        Tutorial tutorial = tutorialRepository.findById(2L).orElse(null);
 
         //Si se utliza un fetch LAZY, mejor estrategia realizar un join fetch en JPQL
         //y cargar en la colección. NOTA: si utilizas EAGER puedes prescindir de join fetch.
@@ -116,6 +117,7 @@ public class TutorialComentarioTests {
 //                .setParameter("id", tutorial.getId())
 //                .getResultList();
 //        tutorial.setComentarios(new HashSet<>(comentarios));
+
         UtilJPA.initializeLazyOneToManyByJoinFetch(entityManager,
                 Tutorial.class,
                 Comentario.class,
@@ -131,6 +133,7 @@ public class TutorialComentarioTests {
 
         comentarioAActualizar.setTexto("EH Comentario Tutorial 1 Actualizado!!!!!!");
 
+        comentarioRepository.save(comentarioAActualizar);
         tutorialRepository.save(tutorial);
 
     }
