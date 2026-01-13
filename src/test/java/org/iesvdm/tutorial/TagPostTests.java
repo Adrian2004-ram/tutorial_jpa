@@ -179,4 +179,26 @@ public class TagPostTests {
 
     }
 
+    @Test
+    @Order(5)
+    void grabarPostQueYaExiste() {
+
+        transactionTemplate.executeWithoutResult(transactionStatus -> {
+
+            Tag tag4 = new Tag(null, "Tag 4 - Nuevas tecnologías", new HashSet<>());
+
+            Post post3 = new Post(null, "Post3 - Tecnologías emergentes", new HashSet<>());
+
+            Post post1 = postRepository.findById(1L).orElse(null);
+
+            tag4.addPost(post1);
+            tag4.addPost(post3);
+            tagRepository.save(tag4);
+
+
+
+        });
+
+    }
+
 }

@@ -25,11 +25,22 @@ public class Tag {
 
     private String name;
 
-    @ManyToMany
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "post_tag",
             joinColumns = @JoinColumn(name = "tag_id"),
             inverseJoinColumns = @JoinColumn(name = "post_id")
     )
     private Set<Post> posts = new HashSet<>();
+
+    //helper
+    public void addPost(Post post) {
+        posts.add(post);
+        post.getTags().add(this);
+    }
+
+    public void removePost(Post post) {
+        posts.remove(post);
+        post.getTags().remove(this);
+    }
 
 }

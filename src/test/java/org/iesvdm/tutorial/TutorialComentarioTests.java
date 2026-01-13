@@ -16,6 +16,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * TEST ONETOMANY ORPHANREMOVAL, CASCADE.ALL, LAZY
@@ -177,7 +178,8 @@ public class TutorialComentarioTests {
     @Order(5)
     public void borrarHijoDePadre() {
 
-        Tutorial tutorial = tutorialRepository.findById(1L).orElse(null);
+        // Pin un id de tutorial que tenga min un comentario
+        Tutorial tutorial = tutorialRepository.findById(3L).orElse(null);
 
         //Si se utlizas un fetch LAZY, mejor estrategia realizar un join fetch en JPQL
         //y cargar en la colección. NOTA: si utilizas EAGER puedes prescindir de join fetch.
@@ -199,7 +201,13 @@ public class TutorialComentarioTests {
 
         tutorial.getComentarios().forEach(System.out::println);
 
+        // BORRADO EL PRIMER COMENTARIO DE LA COLECCIÓN
         Comentario comentarioABorrar = tutorial.getComentarios().stream().findFirst().orElse(null);
+
+
+        // BORRA TODOS LOS COMENTARIOS DE LA COLECCIÓN
+        //tutorial.getComentarios().forEach(c -> comentarioRepository.delete(c));
+
         System.out.println("Comentario a BORRAR: " + comentarioABorrar);
 
         //TECNICA BORRADO POR ENTIDAD HUERFANA
@@ -207,7 +215,7 @@ public class TutorialComentarioTests {
         comentarioABorrar.setTutorial(null);
         tutorial.getComentarios().remove(comentarioABorrar);
         tutorialRepository.save(tutorial);
-        //
+
     }
 
     @Test
@@ -249,6 +257,29 @@ public class TutorialComentarioTests {
         Tutorial tutorial = tutorialRepository.findById(1L).orElse(null);
         tutorialRepository.delete(tutorial);
 
+    }
+
+    @Test
+    @Order(8)
+    public void borrrarTodosLosHijos() {
+        // ¿Por que? La coleccion comentarios @OneToMany es un fetch LAZY, sin transacción no
+        // lanza la query para cargar los elemetos de la colleccion
+        // En metodo de controller o service: @Transactional
+        // En test por ADP -Aspect Directed Programming- del framsework no puedes usar @Transactional
+//                transactionTemplate.execute(status -> {
+//
+//                    Tutorial tutorial = tutorialRepository.findById(2L).orElse(null);
+//
+//                    tutorial.getComentarios().forEach(com -> com.setTutorial(null));
+//
+//                    Set<Comentario> setAux = new HashSet<>(tutorial.getComentarios());
+//
+//
+//
+//                });
+//
+//
+//                return null;
     }
 
 }
